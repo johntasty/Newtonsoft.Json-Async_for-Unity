@@ -1,27 +1,35 @@
 {
   "runtimeTarget": {
-    "name": ".NETCoreApp,Version=v6.0",
+    "name": ".NETStandard,Version=v2.0/",
     "signature": ""
   },
   "compilationOptions": {},
   "targets": {
-    ".NETCoreApp,Version=v6.0": {
+    ".NETStandard,Version=v2.0": {},
+    ".NETStandard,Version=v2.0/": {
       "Newtonsoft.Json/11.0.1-beta2": {
         "dependencies": {
-          "Microsoft.CodeAnalysis.NetAnalyzers": "5.0.3",
-          "Microsoft.SourceLink.GitHub": "1.0.0"
+          "Microsoft.CodeAnalysis.NetAnalyzers": "6.0.0",
+          "Microsoft.SourceLink.GitHub": "1.0.0",
+          "NETStandard.Library": "2.0.3"
         },
         "runtime": {
           "Newtonsoft.Json.dll": {}
         }
       },
       "Microsoft.Build.Tasks.Git/1.0.0": {},
-      "Microsoft.CodeAnalysis.NetAnalyzers/5.0.3": {},
+      "Microsoft.CodeAnalysis.NetAnalyzers/6.0.0": {},
+      "Microsoft.NETCore.Platforms/1.1.0": {},
       "Microsoft.SourceLink.Common/1.0.0": {},
       "Microsoft.SourceLink.GitHub/1.0.0": {
         "dependencies": {
           "Microsoft.Build.Tasks.Git": "1.0.0",
           "Microsoft.SourceLink.Common": "1.0.0"
+        }
+      },
+      "NETStandard.Library/2.0.3": {
+        "dependencies": {
+          "Microsoft.NETCore.Platforms": "1.1.0"
         }
       }
     }
@@ -39,12 +47,19 @@
       "path": "microsoft.build.tasks.git/1.0.0",
       "hashPath": "microsoft.build.tasks.git.1.0.0.nupkg.sha512"
     },
-    "Microsoft.CodeAnalysis.NetAnalyzers/5.0.3": {
+    "Microsoft.CodeAnalysis.NetAnalyzers/6.0.0": {
       "type": "package",
       "serviceable": true,
-      "sha512": "sha512-7rw0JUPSAVGR0HPekQiQvwGPor44p/Ek21+wZABraG4bVYNrSkx98ZZsxSxG5jJ4oqjACJxea8E62UO0dsKDBw==",
-      "path": "microsoft.codeanalysis.netanalyzers/5.0.3",
-      "hashPath": "microsoft.codeanalysis.netanalyzers.5.0.3.nupkg.sha512"
+      "sha512": "sha512-cjG06LMeOADNUeCUaklOfVgrnVkLy80H5PVll4QHDUXv+C+6G9rHczrNdWjfb3xKv3Ts9s4UsP6J2ZWe52Gz4Q==",
+      "path": "microsoft.codeanalysis.netanalyzers/6.0.0",
+      "hashPath": "microsoft.codeanalysis.netanalyzers.6.0.0.nupkg.sha512"
+    },
+    "Microsoft.NETCore.Platforms/1.1.0": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-kz0PEW2lhqygehI/d6XsPCQzD7ff7gUJaVGPVETX611eadGsA3A877GdSlU0LRVMCTH/+P3o2iDTak+S08V2+A==",
+      "path": "microsoft.netcore.platforms/1.1.0",
+      "hashPath": "microsoft.netcore.platforms.1.1.0.nupkg.sha512"
     },
     "Microsoft.SourceLink.Common/1.0.0": {
       "type": "package",
@@ -59,6 +74,13 @@
       "sha512": "sha512-aZyGyGg2nFSxix+xMkPmlmZSsnGQ3w+mIG23LTxJZHN+GPwTQ5FpPgDo7RMOq+Kcf5D4hFWfXkGhoGstawX13Q==",
       "path": "microsoft.sourcelink.github/1.0.0",
       "hashPath": "microsoft.sourcelink.github.1.0.0.nupkg.sha512"
+    },
+    "NETStandard.Library/2.0.3": {
+      "type": "package",
+      "serviceable": true,
+      "sha512": "sha512-st47PosZSHrjECdjeIzZQbzivYBJFv6P2nv4cj2ypdI204DO+vZ7l5raGMiX4eXMJ53RfOIg+/s4DHVZ54Nu2A==",
+      "path": "netstandard.library/2.0.3",
+      "hashPath": "netstandard.library.2.0.3.nupkg.sha512"
     }
   }
 }

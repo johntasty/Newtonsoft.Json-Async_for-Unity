@@ -29,7 +29,7 @@ Find your version in the list of tags: https://github.com/johntasty/Newtonsoft.J
 Open <project>/Packages/manifest.json, add the package in the list of dependencies, replacing the tag after the hash sign (#) with your version of choice.
 
 À la:
-/*
+```
 {
   "dependencies": {
     "async.newtonsoft.json-for-unity": "https://github.com/johntasty/Newtonsoft.Json-Async_for-Unity.git#10.0.0",
@@ -38,7 +38,7 @@ Open <project>/Packages/manifest.json, add the package in the list of dependenci
   }
 }
 Done!
-*/
+```
 
 ---
 

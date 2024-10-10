@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an <see cref="ExpandoObject"/> to and from JSON.
     /// </summary>
-    public class ExpandoObjectConverter : JsonConverter
+    public partial class ExpandoObjectConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Converters
                 switch (reader.TokenType)
                 {
                     case JsonToken.PropertyName:
-                        string propertyName = reader.Value!.ToString();
+                        string propertyName = reader.Value!.ToString()!;
 
                         if (!reader.Read())
                         {

@@ -27,14 +27,34 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json
 {
     public abstract partial class JsonReader
+#if HAVE_ASYNC_DISPOSABLE
+        : IAsyncDisposable
+#endif
     {
+#if HAVE_ASYNC_DISPOSABLE
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            try
+            {
+                Dispose(true);
+                return default;
+            }
+            catch (Exception exc)
+            {
+                return ValueTask.FromException(exc);
+            }
+        }
+#endif
+
         /// <summary>
         /// Asynchronously reads the next JSON token from the source.
         /// </summary>
@@ -71,6 +91,15 @@ namespace Newtonsoft.Json
                 }
             }
         }
+
+        internal async Task ReadAndAssertAsync(CancellationToken cancellationToken)
+        {
+            if (!await ReadAsync(cancellationToken).ConfigureAwait(false))
+            {
+                throw JsonSerializationException.Create(this, "Unexpected end when reading JSON.");
+            }
+        }
+
 
         internal async Task ReaderReadAndAssertAsync(CancellationToken cancellationToken)
         {
@@ -204,6 +233,68 @@ namespace Newtonsoft.Json
             return cancellationToken.CancelIfRequestedAsync<string?>() ?? Task.FromResult(ReadAsString());
         }
 
+        internal async Task ReadForTypeAndAssertAsync(JsonContract? contract, bool hasConverter, CancellationToken cancellationToken)
+        {
+            if (!await ReadForTypeAsync(contract, hasConverter, cancellationToken).ConfigureAwait(false))
+            {
+                throw JsonSerializationException.Create(this, "Unexpected end when reading JSON.");
+            }
+        }
+
+        internal async Task<bool> ReadForTypeAsync(JsonContract? contract, bool hasConverter, CancellationToken cancellationToken)
+        {
+            // don't read properties with converters as a specific value
+            // the value might be a string which will then get converted which will error if read as date for example
+            if (hasConverter)
+            {
+                return await ReadAsync(cancellationToken).ConfigureAwait(false);
+            }
+
+            ReadType t = contract?.InternalReadType ?? ReadType.Read;
+
+            switch (t)
+            {
+                case ReadType.Read:
+                    return await ReadAndMoveToContentAsync(cancellationToken).ConfigureAwait(false);
+                case ReadType.ReadAsInt32:
+                    await ReadAsInt32Async(cancellationToken).ConfigureAwait(false);
+                    break;
+                case ReadType.ReadAsInt64:
+                    bool result = await ReadAndMoveToContentAsync(cancellationToken).ConfigureAwait(false);
+                    if (TokenType == JsonToken.Undefined)
+                    {
+                        throw JsonReaderException.Create(this, "An undefined token is not a valid {0}.".FormatWith(CultureInfo.InvariantCulture, contract?.UnderlyingType ?? typeof(long)));
+                    }
+                    return result;
+                case ReadType.ReadAsDecimal:
+                    await ReadAsDecimalAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+                case ReadType.ReadAsDouble:
+                    await ReadAsDoubleAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+                case ReadType.ReadAsBytes:
+                    await ReadAsBytesAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+                case ReadType.ReadAsBoolean:
+                    await ReadAsBooleanAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+                case ReadType.ReadAsString:
+                    await ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+                case ReadType.ReadAsDateTime:
+                    await ReadAsDateTimeAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+#if HAVE_DATE_TIME_OFFSET
+                case ReadType.ReadAsDateTimeOffset:
+                    await ReadAsDateTimeOffsetAsync(cancellationToken).ConfigureAwait(false);
+                    break;
+#endif
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+
+            return (TokenType != JsonToken.None);
+        }
         internal async Task<bool> ReadAndMoveToContentAsync(CancellationToken cancellationToken)
         {
             return await ReadAsync(cancellationToken).ConfigureAwait(false) && await MoveToContentAsync(cancellationToken).ConfigureAwait(false);

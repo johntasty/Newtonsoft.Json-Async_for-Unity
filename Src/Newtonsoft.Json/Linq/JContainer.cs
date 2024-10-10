@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Occurs when the items list of the collection has changed, or the collection is reset.
         /// </summary>
-        public event NotifyCollectionChangedEventHandler CollectionChanged
+        public event NotifyCollectionChangedEventHandler? CollectionChanged
         {
             add { _collectionChanged += value; }
             remove { _collectionChanged -= value; }
@@ -723,8 +723,14 @@ namespace Newtonsoft.Json.Linq
         /// Merge the specified content into this <see cref="JToken"/>.
         /// </summary>
         /// <param name="content">The content to be merged.</param>
-        public void Merge(object content)
+        public void Merge(object? content)
         {
+            if (content == null)
+            {
+                return;
+            }
+
+            ValidateContent(content);
             MergeItem(content, null);
         }
 
@@ -733,9 +739,29 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="content">The content to be merged.</param>
         /// <param name="settings">The <see cref="JsonMergeSettings"/> used to merge the content.</param>
-        public void Merge(object content, JsonMergeSettings? settings)
+        public void Merge(object? content, JsonMergeSettings? settings)
         {
+            if (content == null)
+            {
+                return;
+            }
+
+            ValidateContent(content);
             MergeItem(content, settings);
+        }
+
+        private void ValidateContent(object content)
+        {
+            if (content.GetType().IsSubclassOf(typeof(JToken)))
+            {
+                return;
+            }
+            if (IsMultiContent(content))
+            {
+                return;
+            }
+
+            throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, content.GetType()), nameof(content));
         }
 
         internal void ReadTokenFrom(JsonReader reader, JsonLoadSettings? options)
@@ -813,7 +839,7 @@ namespace Newtonsoft.Json.Linq
                         parent = parent.Parent;
                         break;
                     case JsonToken.StartConstructor:
-                        JConstructor constructor = new JConstructor(r.Value!.ToString());
+                        JConstructor constructor = new JConstructor(r.Value!.ToString()!);
                         constructor.SetLineInfo(lineInfo, settings);
                         parent.Add(constructor);
                         parent = constructor;
@@ -876,7 +902,7 @@ namespace Newtonsoft.Json.Linq
             DuplicatePropertyNameHandling duplicatePropertyNameHandling = settings?.DuplicatePropertyNameHandling ?? DuplicatePropertyNameHandling.Replace;
 
             JObject parentObject = (JObject)parent;
-            string propertyName = r.Value!.ToString();
+            string propertyName = r.Value!.ToString()!;
             JProperty? existingPropertyWithName = parentObject.Property(propertyName, StringComparison.Ordinal);
             if (existingPropertyWithName != null)
             {
@@ -921,10 +947,11 @@ namespace Newtonsoft.Json.Linq
             return string.Empty;
         }
 
-        PropertyDescriptorCollection? ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
+        PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
         {
             ICustomTypeDescriptor? d = First as ICustomTypeDescriptor;
-            return d?.GetProperties();
+
+            return d?.GetProperties() ?? new PropertyDescriptorCollection(CollectionUtils.ArrayEmpty<PropertyDescriptor>());
         }
 #endif
 
@@ -980,7 +1007,7 @@ namespace Newtonsoft.Json.Linq
         }
         #endregion
 
-        private JToken? EnsureValue(object value)
+        private JToken? EnsureValue(object? value)
         {
             if (value == null)
             {
@@ -996,7 +1023,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         #region IList Members
-        int IList.Add(object value)
+        int IList.Add(object? value)
         {
             Add(EnsureValue(value));
             return Count - 1;
@@ -1007,17 +1034,17 @@ namespace Newtonsoft.Json.Linq
             ClearItems();
         }
 
-        bool IList.Contains(object value)
+        bool IList.Contains(object? value)
         {
             return ContainsItem(EnsureValue(value));
         }
 
-        int IList.IndexOf(object value)
+        int IList.IndexOf(object? value)
         {
             return IndexOfItem(EnsureValue(value));
         }
 
-        void IList.Insert(int index, object value)
+        void IList.Insert(int index, object? value)
         {
             InsertItem(index, EnsureValue(value), false);
         }
@@ -1026,7 +1053,7 @@ namespace Newtonsoft.Json.Linq
 
         bool IList.IsReadOnly => false;
 
-        void IList.Remove(object value)
+        void IList.Remove(object? value)
         {
             RemoveItem(EnsureValue(value));
         }
@@ -1036,7 +1063,7 @@ namespace Newtonsoft.Json.Linq
             RemoveItemAt(index);
         }
 
-        object IList.this[int index]
+        object? IList.this[int index]
         {
             get => GetItem(index);
             set => SetItem(index, EnsureValue(value));
@@ -1141,20 +1168,22 @@ namespace Newtonsoft.Json.Linq
             switch (settings?.MergeArrayHandling ?? MergeArrayHandling.Concat)
             {
                 case MergeArrayHandling.Concat:
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        target.Add(item);
+                        target.Add(CreateFromContent(item));
                     }
                     break;
                 case MergeArrayHandling.Union:
 #if HAVE_HASH_SET
                     HashSet<JToken> items = new HashSet<JToken>(target, EqualityComparer);
 
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        if (items.Add(item))
+                        JToken contentItem = CreateFromContent(item);
+
+                        if (items.Add(contentItem))
                         {
-                            target.Add(item);
+                            target.Add(contentItem);
                         }
                     }
 #else
@@ -1164,12 +1193,14 @@ namespace Newtonsoft.Json.Linq
                         items[t] = true;
                     }
 
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        if (!items.ContainsKey(item))
+                        JToken contentItem = CreateFromContent(item);
+
+                        if (!items.ContainsKey(contentItem))
                         {
-                            items[item] = true;
-                            target.Add(item);
+                            items[contentItem] = true;
+                            target.Add(contentItem);
                         }
                     }
 #endif
@@ -1180,9 +1211,9 @@ namespace Newtonsoft.Json.Linq
                         break;
                     }
                     target.ClearItems();
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        target.Add(item);
+                        target.Add(CreateFromContent(item));
                     }
                     break;
                 case MergeArrayHandling.Merge:
@@ -1211,7 +1242,7 @@ namespace Newtonsoft.Json.Linq
                         }
                         else
                         {
-                            target.Add(targetItem);
+                            target.Add(CreateFromContent(targetItem));
                         }
 
                         i++;

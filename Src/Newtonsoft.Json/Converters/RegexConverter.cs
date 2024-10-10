@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="Regex"/> to and from JSON and BSON.
     /// </summary>
-    public class RegexConverter : JsonConverter
+    public partial class RegexConverter : JsonConverter
     {
         private const string PatternName = "Pattern";
         private const string OptionsName = "Options";
@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Converters
                 switch (reader.TokenType)
                 {
                     case JsonToken.PropertyName:
-                        string propertyName = reader.Value!.ToString();
+                        string propertyName = reader.Value!.ToString()!;
 
                         if (!reader.Read())
                         {

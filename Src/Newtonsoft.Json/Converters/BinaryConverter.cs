@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a binary value to and from a base 64 string value.
     /// </summary>
-    public class BinaryConverter : JsonConverter
+    public partial class BinaryConverter : JsonConverter
     {
 #if HAVE_LINQ
         private const string BinaryTypeName = "System.Data.Linq.Binary";
@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Converters
             {
                 // current token is already at base64 string
                 // unable to call ReadAsBytes so do it the old fashion way
-                string encodedData = reader.Value!.ToString();
+                string encodedData = reader.Value!.ToString()!;
                 data = Convert.FromBase64String(encodedData);
             }
             else
@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)
+                ? Nullable.GetUnderlyingType(objectType)!
                 : objectType;
 
 #if HAVE_LINQ

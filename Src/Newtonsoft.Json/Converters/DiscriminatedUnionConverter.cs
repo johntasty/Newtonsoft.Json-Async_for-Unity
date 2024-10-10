@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a F# discriminated union type to and from JSON.
     /// </summary>
-    public class DiscriminatedUnionConverter : JsonConverter
+    public partial class DiscriminatedUnionConverter : JsonConverter
     {
         #region UnionDefinition
         internal class Union
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Converters
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
-                string propertyName = reader.Value!.ToString();
+                string propertyName = reader.Value!.ToString()!;
                 if (string.Equals(propertyName, CasePropertyName, StringComparison.OrdinalIgnoreCase))
                 {
                     reader.ReadAndAssert();

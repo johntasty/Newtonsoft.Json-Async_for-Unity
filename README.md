@@ -23,37 +23,9 @@ Where official Json.NET 12.0.1 becomes Newtonsoft.Json-for-Unity 12.0.1*xx*.
 
 Please see the [CHANGELOG.md][changelog.md] file inside this package.
 
-## Installation via [OpenUPM][openupm] ![OpenUPM icon][openupm-icon.png]
-
-```sh
-openupm add jillejr.newtonsoft.json-for-unity
-```
-
-## Other installation options
-
-- [Installation via OpenUPM
-  ![OpenUPM icon][openupm-icon.png]][wiki-installation-via-openupm]
-  
-- [Installation via pure UPM][wiki-installation-via-upm]
 
 - [Installation via Git in UPM][wiki-installation-via-git-in-upm]
 
-## Updating the package
-
-### Updating via the UI
-
-Open the Package Manager UI `Window > Package Manager`
-
-![preview of where window button is](https://i.imgur.com/0FvA5W6.png)
-
-Followed by pressing the update button on the `jillejr.newtonsoft.json-for-unity`
-package
-
-![preview of update button](https://i.imgur.com/H6LhK2n.png)
-
-### Updating via the manifest file
-
-Visit the wiki: [Installation via UPM][wiki-installation-via-upm]
 
 ---
 

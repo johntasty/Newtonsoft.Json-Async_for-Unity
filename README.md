@@ -24,7 +24,20 @@ Where official Json.NET 12.0.1 becomes Newtonsoft.Json-for-Unity 12.0.1*xx*.
 Please see the [CHANGELOG.md][changelog.md] file inside this package.
 
 
-- [Installation via Git in UPM][wiki-installation-via-git-in-upm]
+Find your version in the list of tags: https://github.com/johntasty/Newtonsoft.Json-Async_for-Unity/tags
+
+Open <project>/Packages/manifest.json, add the package in the list of dependencies, replacing the tag after the hash sign (#) with your version of choice.
+
+À la:
+
+{
+  "dependencies": {
+    "async.newtonsoft.json-for-unity": "https://github.com/johntasty/Newtonsoft.Json-Async_for-Unity.git#10.0.0",
+
+    /* ... rest of Unity packages ... */
+  }
+}
+Done!
 
 
 ---

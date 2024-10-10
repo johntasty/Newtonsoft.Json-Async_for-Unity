@@ -37,9 +37,9 @@ Open <project>/Packages/manifest.json, add the package in the list of dependenci
     /* ... rest of Unity packages ... */
   }
 }
-Done!
-```
 
+```
+Done!
 ---
 
 This package is licensed under The MIT License (MIT)

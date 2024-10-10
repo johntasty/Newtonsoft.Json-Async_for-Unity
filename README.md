@@ -1,4 +1,4 @@
-# Newtonsoft.Json for Unity
+# Async Newtonsoft.Json for Unity
 
 Json.NET is a popular high-performance JSON framework for .NET
 
